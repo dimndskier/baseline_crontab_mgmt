@@ -1,0 +1,15 @@
+{
+  "spec/spec_helper.rb": "0db89c9a486df193c0e40095422e19dc",
+  "Rakefile": "20b80e526e351a74df2001f504e756d2",
+  "Gemfile": "dbc1a15e3a264c03878028240cfc5d89",
+  "templates/tmpclear.sh.erb": "cae760d17b70a2410a6a19b436aedd79",
+  "manifests/implement.pp": "2798e3caa16ae8d20b409ada66375a3a",
+  "README.md": "cb1206fa0abaeb39c7cc5b87bb9b130f",
+  "manifests/init.pp": "14a2f5244de2766213d5db9303fc85f5",
+  "templates/crontab.new.erb": "d609eca97baa9c37c9d22b446a777b5e",
+  "tests/init.pp": "5b895400bfcaf066646635f3502e0a09",
+  "metadata.json": "7e5adacfd9890d3d9030da9f26bfac39",
+  "templates/crontab.orig.erb": "dcf0040fa35a5298e93f88d0ce3bdd93",
+  "spec/classes/init_spec.rb": "51c24823d71921f2a82ccbe4506988b4",
+  "manifests/backout.pp": "9780d41894d324e8e14cf8e9473313f7"
+}

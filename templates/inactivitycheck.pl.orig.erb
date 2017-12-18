@@ -1,0 +1,75 @@
+#!/bin/perl
+
+use File::stat;
+use Time::localtime;
+
+# Lock accouts after 60 day inactivity
+$LOCKDAYS=60;
+$LOCKTHRESH=$LOCKDAYS*86400;
+
+$EPOCNOW=time();
+#######################################
+# Put user ids to exempt in this file
+#######################################
+$EXPEMPTFILE="/etc/exempt_users";
+
+
+$LOGGERPREFIX="MSS INACTIVITY CHECK: ";
+
+open(file,"/etc/passwd");
+@PASSWD=<file>;
+close(file);
+
+open(file,"/etc/shadow");
+@SHADOW=<file>;
+close(file);
+
+open(file,"$EXPEMPTFILE");
+@EXEMPT=<file>;
+close(file);
+
+foreach $line (@SHADOW) {
+  chomp $line;
+  ($user,$pass) = split(":",$line);
+  if(("$pass" =~ /!!/) || ("$pass" =~ /\*/)) {
+    print("Account $user is locked,  skipping\n");
+  } else {
+    print("Account $user is not locked,  continuing\n");
+    $EXEMPT=0;
+    foreach $exemptuser (@EXEMPT) {
+      chomp $exemptuser;
+      if("$exemptuser" eq "$user") {
+        print("User $user is exempt,  skipping ...\n");
+        $EXEMPT=1;
+      }
+    }
+    if($EXEMPT == 0) {
+      $HOMEDIR="/";
+      print("Checking for $user home directory in /etc/passwd\n");
+      foreach $pwline (@PASSWD) {
+        chomp $pwline;
+        ($PW_USER, $PW_LEGACY1, $PW_UID, $PW_GID, $PW_DESC, $PW_HOMEDIR, $PW_SHELL) = split(":",$pwline);
+        if ("$PW_USER" eq "$user") {
+           $HOMEDIR=$PW_HOMEDIR;
+        }
+      }
+      print("using $HOMEDIR as home directory\n");
+      $EPOCSTAMP="";
+      $MODIFIEDDATESTAMP="";
+      $LASTMODIFIED="";
+
+      $EPOCSTAMP=stat($HOMEDIR)->atime;
+      $MODIFIEDDATESTAMP=ctime(stat($HOMEDIR)->atime);
+      print("User $user last accessed their home directory on $MODIFIEDDATESTAMP ($EPOCSTAMP)...\n");
+      $LASTMODIFIED=$EPOCNOW-$EPOCSTAMP;
+      if ($LASTMODIFIED >= $LOCKTHRESH) {
+        print("Locking user $user, last access on  $MODIFIEDDATESTAMP ($EPOCSTAMP)...\n");
+        system("/bin/logger \"$LOGGERPREFIX locking user $user due to inactivity. Last modified on $MODIFIEDDATESTAMP\"");
+        system("/usr/bin/passwd -l $user");
+      } else {
+        print("$user has used their account lass than $LOCKDAYS ago, not locking\n");
+      }
+    }
+  }
+}
+

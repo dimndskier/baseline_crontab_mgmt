@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#
+# This file managed by puppet module: baseline_crontab_mgmt
+# DO NOT ALTER outside of the Puppet Framework.
+#
+
+
+#Summary: This script checks who is logged in then compares that list to the kdecache directories in /tmp.  If the user is not currently logged in, than the associated kdecache directory is purged
+
+#Variable declaration.
+#number of users currently logged in
+numusers=`who | cut -f 1 -d " " | sort -u | wc -l`
+#number of directories found in /tmp
+numdirs=`find /tmp/ -maxdepth 1 -type d -name 'kdecache-*' -print | wc -l`
+#places each logged in user as a string into an array
+userstore=( $(who | cut -f 1 -d " " | sort -u) ) 
+#places each found directory as a string into an array
+dirstore=( $(find /tmp/ -maxdepth 1 -type d -name 'kdecache-*') )
+
+#Runs through each user one by one and checks if they match a directory.  If so, that directory is removed from the directory array.
+for ((i=0; i<$numdirs; i++)); do
+        for ((u=0; u<$numusers; u++)); do
+                if [[ ${userstore[u]} == ${dirstore[i]#*-} ]] ; then
+                        #This removes the directory from the array if the user matches the active directory
+                        unset dirstore[i]
+                        #This recreates the array because simply removing an entry does not reset it's position in teh array index
+                        dirstore=( "${dirstore[@]}" )
+                fi      
+        done
+done
+
+#Removes directories still in array
+for ((n=0; n<${#dirstore[@]}; n++));do
+        rm -rf ${dirstore[n]}
+done
+

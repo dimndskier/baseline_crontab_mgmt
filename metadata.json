@@ -1,0 +1,14 @@
+{
+  "name": "mas-baseline_crontab_mgmt",
+  "version": "1.4.0",
+  "author": "wfrench",
+  "summary": "A single module to manage the|a user crontab on all systems this module touches.",
+  "license": "Apache 2.0",
+  "source": "gitlab-tst.aws.iams.org:mas/baseline_crontab_mgmt.git",
+  "project_page": "gitlab-tst.aws.iams.org:mas/baseline_crontab_mgmt",
+  "issues_url": "gitlab-tst.aws.iams.org:mas/baseline_crontab_mgmt/",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+  ]
+}
+

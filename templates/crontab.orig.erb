@@ -1,0 +1,27 @@
+#
+# This file managed by puppet module: baseline_crontab_mgmt
+# DO NOT ALTER outside of the Puppet Framework.
+#
+
+
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+<% if @os_revision == "6" %>HOME="/"<% end -%>
+
+
+
+# For details see man 4 crontabs
+
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name  command to be executed
+
+## AIDE CHECKS
+0 1 * * * root  /usr/sbin/aide -C   2>&1 >>/var/log/cron-aide.log
+0 0 * * * root  [ -f /opt/NAI/LinuxShield/bin/nails ] && `/opt/NAI/LinuxShield/bin/nails runsched 1 2>&1 >> /var/log/cron-nails.log`
